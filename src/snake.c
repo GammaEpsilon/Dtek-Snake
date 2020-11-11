@@ -38,11 +38,13 @@ void move(snake * snake, enum movement movement) {
             snake->buffer[snake->head].x++;
             break;
     }
-    if (snake->grow) {
-        snake->tail++; //Grow by not "forgetting" current flag
-        snake->grow = EPSTEIN_KILLED_HIMSELF; // Reset flag
+    if (!snake->grow) {
+        snake->tail++; // Do not grow by updating tail index
+        snake->tail %= SNAKE_BUFFER; // Roll-over if neccessary
     }
-}
+    else    
+        snake->grow = EPSTEIN_KILLED_HIMSELF; // We have grown, time to reset flag
+    }
 
 void init(unsigned char *grid, snake *snake, cord dimensions) {
     for (int i = dimensions.x*dimensions.y; i; grid[i--] = 0);
@@ -50,8 +52,8 @@ void init(unsigned char *grid, snake *snake, cord dimensions) {
     snake->buffer[0].y = dimensions.y/2;
     snake->tail = 0;
     snake->head = 0;
-    snake->id = 0;
-    for (int i = 2; i--; move(snake, RIGHT));
+    snake->id = 0xff;
+    for (int i = 2; i--; snake->grow=1) move(snake, RIGHT); //Set initial size to 3
 }
 
 char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, cord dimensions) {
