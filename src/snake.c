@@ -1,19 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
 
 #define SNAKE_BUFFER 255
 #define APPLE_REPR 127
 #define EPSTEIN_KILLED_HIMSELF 0
 #define reset_grid(grid, dimensions) for (int i = dimensions.x*dimensions.y; i; grid[i--] = 0)
 #define generate_apple(grid, dimensions) { do { appleLoc = rand()%(dimensions.x*dimensions.y); } while (grid[appleLoc]); grid[appleLoc] = APPLE_REPR; }
-
-//TODO Remove
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
 
 #include "snake.h"
 
@@ -84,7 +76,6 @@ char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, co
             if (temp == APPLE_REPR) {
                 snakes[i].grow = 1; //We ate an apple
                 generate_apple(grid, dimensions);
-                printf("%d\n", appleLoc);
             }
             else //Game over
                 bitflag |= (1<<snakes[i].id); //Set the bit of the corresponding id
@@ -100,39 +91,6 @@ char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, co
     return bitflag;
 }
 
-void printSnake(const snake *snake) {
-    printf("Head: %d\nTail: %d\n", snake->head, snake->tail);
-    for (int i = snake->tail -1; ++i<=snake->head; printf("x:%d y:%d ", snake->buffer[i].x, snake->buffer[i].y));
-}
-
-/*
-int main(void) {
-    snake snake;
-    cord dimensions = {25, 25};
-    unsigned char * grid = (unsigned char *)malloc(dimensions.x*dimensions.y);
-    reset_grid(grid, dimensions);
-    init(&snake, dimensions);
-    enum movement moves[] = {
-        RIGHT,
-        RIGHT,
-        RIGHT,
-        UP,
-        UP
-    };
-    char bitflag;
-    for (int i = 0; !(bitflag = updateGrid(grid, &snake, 1, dimensions)); i++) {
-        consoleDisplay(grid, dimensions);
-        snake.movement = moves[i%5];
-        move(&snake);
-        Sleep((DWORD) 250);
-    }
-    for (char i = 0; i < 8; i++) {
-        if ((1<<i)&bitflag)
-        printf("Game over, player %d lost", i);
-    }
-    free(grid);
-}
-*/
 void game_init(char noOfSnakes, int x, int y, unsigned char *grid) {
     int apple;
     snakes = (snake*)malloc(noOfSnakes*sizeof(snake));
@@ -160,7 +118,6 @@ char turn(enum movement *movement, unsigned char * output) {
             if ((1<<i)&bitflag)
                 index += sprintf(output + index, "Game over, player %d lost\n", i);
         }//Clean up
-        //free(grid);
         free(snakes);
         return 1;
     }
