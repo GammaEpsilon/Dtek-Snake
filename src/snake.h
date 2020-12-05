@@ -8,11 +8,13 @@ enum movement {OLD ,UP, DOWN, LEFT, RIGHT};
  *x dimension
  *y dimension
  *output
+ *returns 0 on fail and 1 on success
  */
-void game_init(char, int, int, unsigned char*);
+char game_init(char, int, int, unsigned char*);
 /*
  * Arrays with each respective snakes movement
  * output array
+ * returns 1 on game over
  */
 char turn(enum movement*, unsigned char*);
 

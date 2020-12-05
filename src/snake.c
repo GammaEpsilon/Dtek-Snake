@@ -3,6 +3,7 @@
 
 #define SNAKE_BUFFER 255
 #define APPLE_REPR 127
+#define MAX_SNAKES 2 //Increment if you want to increase the maximum supported snakes
 #define EPSTEIN_KILLED_HIMSELF 0
 #define reset_grid(grid, dimensions) { int i = dimensions.x*dimensions.y; while(i) grid[i--] = 0; }
 #define generate_apple(grid, dimensions) { do { appleLoc = rand()%(dimensions.x*dimensions.y); } while (grid[appleLoc]); grid[appleLoc] = APPLE_REPR; }
@@ -22,7 +23,7 @@ typedef struct snake {
     enum movement movement;
 } snake;
 
-snake *snakes;
+snake snakes[MAX_SNAKES];
 char noOfS;
 int appleLoc;
 cord dims;
@@ -95,9 +96,9 @@ char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, co
     return bitflag;
 }
 
-void game_init(char noOfSnakes, int x, int y, unsigned char *grid) {
+char game_init(char noOfSnakes, int x, int y, unsigned char *grid) {
     int apple;
-    snakes = (snake*)malloc(noOfSnakes*sizeof(snake));
+    if (noOfSnakes >= MAX_SNAKES) return 0;
     dims.x = x;
     dims.y = y;
     noOfS = noOfSnakes;
@@ -105,6 +106,7 @@ void game_init(char noOfSnakes, int x, int y, unsigned char *grid) {
     int i;
     for (i = 0; i < noOfS; i++) init(snakes + i, dims);
     generate_apple(grid, dims);
+    return 1;
 }
 
 char turn(enum movement *movement, unsigned char * output) {
@@ -123,8 +125,7 @@ char turn(enum movement *movement, unsigned char * output) {
         for (i = 0; i < 8; i++) {
             if ((1<<i)&bitflag)
                 index += sprintf(output + index, "Game over, player %d lost\n", i);
-        }//Clean up
-        free(snakes);
+        }
         return 1;
     }
 }
