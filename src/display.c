@@ -60,3 +60,4 @@ void display_update(unsigned char [][]gameMap) {
 		}
 	}
 }
+
