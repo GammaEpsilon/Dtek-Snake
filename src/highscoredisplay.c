@@ -5,11 +5,12 @@
 #define DISPLAY_CHANGE_TO_COMMAND_MODE (PORTFCLR = 0x10)
 #define DISPLAY_CHANGE_TO_DATA_MODE (PORTFSET = 0x10)
 
+#define highscores int[5];
+
 //Displays the current highscores and the players result this game
 void highscore(snakelength) {
     //Fix a static highscore image
     //skapa en array som håller highscore värden och sedan presenta top 3/5 etc. Kolla sedan om det sista elementet på 
-    int highscores [5];
         int i = 0 //säg att 5 platser visas på vårt highscore bord
         for(i;i < 5; i++) {
             if(highscores[i] != NULL) {
@@ -19,8 +20,10 @@ void highscore(snakelength) {
                     highscore(tempscore) //skicka rekursvit in tempscore för att byta ut de andra highscorsen när vi byter ut ett tidigare i listan
                 }
             }
+			else {
             highscores[i] = snakelength;
             break;
+			}
         }
     display_highscore(3, highscores);
     display_update();
