@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 
 #define SNAKE_BUFFER 255
@@ -98,7 +97,7 @@ char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, co
 
 char game_init(char noOfSnakes, int x, int y, unsigned char *grid) {
     int apple;
-    if (noOfSnakes >= MAX_SNAKES) return 0;
+    if (noOfSnakes > MAX_SNAKES) return 0;
     dims.x = x;
     dims.y = y;
     noOfS = noOfSnakes;
@@ -120,11 +119,15 @@ char turn(enum movement *movement, unsigned char * output) {
     if (!(bitflag = updateGrid(output, snakes, noOfS, dims))) { //Not gameover
         return 0;
     } else {
-        char i;
+        char i, j, c;
         int index = 0;
-        for (i = 0; i < 8; i++) {
-            if ((1<<i)&bitflag)
-                index += sprintf(output + index, "Game over, player %d lost\n", i);
+        for (i = 0; i <= MAX_SNAKES; i++) {
+            if ((1<<i)&bitflag) {
+                char *temp = "Game over, player   lost\n";
+                for (j = 0; (c = *temp++) != '\0'; j++) output[j+index] = c;
+                output[18 + index] = '0' + i;
+                index  += j;
+            }
         }
         return 1;
     }
