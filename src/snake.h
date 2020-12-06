@@ -3,6 +3,8 @@
 
 enum movement {OLD ,UP, DOWN, LEFT, RIGHT};
 
+enum AI {NONE, BRAINDEAD, RETARDED, AVERAGE};
+
 /*Params
  *No of snakes in game
  *x dimension
@@ -10,12 +12,12 @@ enum movement {OLD ,UP, DOWN, LEFT, RIGHT};
  *output
  *returns 0 on fail and 1 on success
  */
-char game_init(char, int, int, unsigned char*);
+char game_init(enum AI, int, int, unsigned char*);
 /*
  * Arrays with each respective snakes movement
  * output array
  * returns 1 on game over
  */
-char turn(enum movement*, unsigned char*);
+char turn(enum movement, unsigned char*);
 
 #endif

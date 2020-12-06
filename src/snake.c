@@ -26,6 +26,7 @@ snake snakes[MAX_SNAKES];
 char noOfS;
 int appleLoc;
 cord dims;
+enum AI mode;
 
 void move(snake * snake) {
     snake->buffer[snake->head + 1] = snake->buffer[snake->head];
@@ -70,9 +71,9 @@ char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, co
     char bitflag = 0;
     int temp;
     int i;
-    for (temp, i = 0; i < noOfSnakes; i++) {
+    for (i = 0; i < noOfSnakes; i++) {
         cord snakeCords = snakes[i].buffer[snakes[i].head];
-        if (snakeCords.x > dimensions.x || snakeCords.x < 0 //Check for hitting wall on x-axis
+        if ((snakeCords.x > dimensions.x || snakeCords.x < 0) //Check for hitting wall on x-axis
         || (snakeCords.y > dimensions.y || snakeCords.y < 0) //Check for hitting wall on y-axis
         || (temp = (grid[snakeCords.x + snakeCords.y*dimensions.x])) //Check for hitting apple, other snake or oneself
             ) // We hit something...
@@ -89,18 +90,53 @@ char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, co
             int j;
             for (j = snakes[i].tail; j != snakes[i].head; ++j%SNAKE_BUFFER)
                 grid[snakes[i].buffer[j].x + snakes[i].buffer[j].y*dimensions.x] = snakes[i].id;
+            grid[appleLoc] = APPLE_REPR; //Place down apple
         }
     }
-    grid[appleLoc] = APPLE_REPR; //Place down apple
     return bitflag;
 }
 
-char game_init(char noOfSnakes, int x, int y, unsigned char *grid) {
-    int apple;
-    if (noOfSnakes > MAX_SNAKES) return 0;
+// "AI" Part
+
+enum AI mode;
+
+enum movement braindead(const snake *snake) {
+    return snake->movement;
+}
+// 1/2 chance to OLD, 1/4 chance for the other two non conflicting directions
+enum movement retarded(const snake *snake) {
+    enum movement random = (rand()%4) + 1;
+    return (
+       ((random == UP || random == DOWN) && (snake->movement == UP || snake->movement == DOWN))
+       ||
+       ((random == LEFT || random == RIGHT) && (snake->movement == LEFT || snake->movement == RIGHT))
+       ) ? snake->movement:random; //Return OLD if random chose same or conflicting direction, else random
+}
+
+enum movement average(const snake *snake, const unsigned char *grid) {
+    cord applelocation = {appleLoc%dims.x, appleLoc/dims.x};
+    cord snakeCord = snake->buffer[snake->head];
+    // Following if statements works like this: Will I get closer to apple by going this way? If so; will I not crash? 
+    if (applelocation.y > snakeCord.y && !grid[(snakeCord.y+1)*dims.x + snakeCord.x] || (snakeCord.y+1)*dims.x + snakeCord.x == appleLoc) return DOWN;
+    if (applelocation.y < snakeCord.y && !grid[(snakeCord.y-1)*dims.x + snakeCord.x] || (snakeCord.y-1)*dims.x + snakeCord.x == appleLoc) return UP;
+    if (applelocation.x > snakeCord.x && !grid[snakeCord.y*dims.x + snakeCord.x+1] || snakeCord.y*dims.x + snakeCord.x+1 == appleLoc) return RIGHT;
+    if (applelocation.x < snakeCord.x && !grid[(snakeCord.y)*dims.x + snakeCord.x-1] || snakeCord.y*dims.x + snakeCord.x-1 == appleLoc) return LEFT;
+    char i, temp[] = {-1, 1};
+    for (i = 0; i < 4; i++) { // Just try not to fucking die
+        if (! grid[(snakeCord.y+temp[i]*(i<3))*dims.x + snakeCord.x + temp[i]*(i>2)])
+            return i + 1;
+    }
+    return (rand()%4)+1; //Fuck it
+}
+
+// Exposed functions
+
+char game_init(enum AI ai, int x, int y, unsigned char *grid) {
+    noOfS = 1 + !(!ai);
+    mode = ai;
+    if (noOfS > MAX_SNAKES) return 0; // Should never happen
     dims.x = x;
     dims.y = y;
-    noOfS = noOfSnakes;
     reset_grid(grid, dims);
     int i;
     for (i = 0; i < noOfS; i++) init(snakes + i, dims);
@@ -108,15 +144,27 @@ char game_init(char noOfSnakes, int x, int y, unsigned char *grid) {
     return 1;
 }
 
-char turn(enum movement *movement, unsigned char * output) {
+char turn(enum movement movement, unsigned char * output) {
     int bitflag;
     int j;
-    for (j = 0; j < noOfS; j++) {
-        if (movement[j])
-            snakes[j].movement = movement[j];
+    if (movement)
+        snakes[0].movement = movement;
+    for (j = 0; j < noOfS; j++)
         move(snakes + j);
-    }
     if (!(bitflag = updateGrid(output, snakes, noOfS, dims))) { //Not gameover
+        switch (mode) { // AI Switch
+            case NONE:
+                break;
+            case BRAINDEAD:
+                snakes[1].movement = braindead(snakes + 1);
+                break;
+            case RETARDED:
+                snakes[1].movement = retarded(snakes + 1);
+                break;
+            case AVERAGE:
+                snakes[1].movement = average(snakes + 1, output);
+                break;
+        }
         return 0;
     } else {
         char i, j, c;
