@@ -3,9 +3,11 @@
 #define SNAKE_BUFFER 255
 #define APPLE_REPR 127
 #define MAX_SNAKES 2 //Increment if you want to increase the maximum supported snakes
+#define INITIAL_LENGTH 2
 #define EPSTEIN_KILLED_HIMSELF 0
 #define reset_grid(grid, dimensions) { int i = dimensions.x*dimensions.y+1; while(i) grid[i] = resetgrid[i--]; }
 #define generate_apple(grid, dimensions) { do { appleLoc = rand()%(dimensions.x*dimensions.y); } while (grid[appleLoc]); grid[appleLoc] = APPLE_REPR; }
+#define abs(x) ((x >= 0) ? x:-x)
 
 #include "snake.h"
 
@@ -64,19 +66,23 @@ void init(snake *snake, cord dimensions) {
     snake->id = createdSnakes++;
     snake->movement = RIGHT;
     int i;
-    for (i = 1; i--; snake->grow=1) move(snake); //Set initial size to 3
+    for (i = INITIAL_LENGTH-1; i--; snake->grow=1) move(snake); //Set initial size to 2
 }
 
 void init_structgrid(cord dims, char multiplayer) {
-    if (multiplayer) {
-        cord arr[] = {{6, 4}, {dims.x-3, 4}, {6, dims.y-5}, {dims.x-3, dims.y-5}}; // I have no idea why these are the constants that position the crosses correctly
+    cord arr[] = {{6, 4}, {dims.x-3, 4}, {6, dims.y-5}, {dims.x-3, dims.y-5}}; // I have no idea why these are the constants that position the crosses correctly
         int i, j;
         for (i = 0; i < 4; i++)
             for (j = -2; j <= 2; j++) { //Draw crosses
                 resetgrid[(arr[i].y+j)*dims.x+arr[i].x] = 10;
                 resetgrid[arr[i].y*dims.x+arr[i].x+j] = 10;
             }
-        for (i = 6; i <= dims.x-3; i++) resetgrid[dims.x*(dims.y/2) + i] = 10;
+    if (multiplayer)
+        for (i = 6; i <= dims.x-3; i++) resetgrid[dims.x*(dims.y/2) + i] = 10; // Draw horizontal line in middle
+    else {
+        int temp[] = {0, dims.y/2-3, dims.y/2+4, dims.y};
+        for (j = 0; j < 4; j += 2)
+            for (i = temp[j]; i < temp[j+1]; i++) resetgrid[dims.x*i+dims.x/2+2] = 10; // Draw vertical line in middle
     }
 }
 
@@ -87,7 +93,7 @@ char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, co
     int i;
     for (i = 0; i < noOfSnakes; i++) {
         cord snakeCords = snakes[i].buffer[snakes[i].head];
-        if ((snakeCords.x > dimensions.x || snakeCords.x < 0) //Check for hitting wall on x-axis
+        if ((snakeCords.x > dimensions.x || snakeCords.x <= 0) //Check for hitting wall on x-axis
         || (snakeCords.y > dimensions.y || snakeCords.y < 0) //Check for hitting wall on y-axis
         || (temp = (grid[snakeCords.x + snakeCords.y*dimensions.x])) //Check for hitting apple, other snake or oneself
             ) // We hit something...
@@ -154,16 +160,16 @@ char game_init(enum AI ai, int x, int y, unsigned char *grid, char structures, u
     if (noOfS > MAX_SNAKES) return 0; // Should never happen
     dims.x = x;
     dims.y = y;
-    reset_grid(grid, dims);
     int i;
     for (i = 0; i < noOfS; i++) init(snakes + i, dims);
     if (structures)
         init_structgrid(dims, ai);
+    reset_grid(grid, dims);
     generate_apple(grid, dims);
     return 1;
 }
 
-char turn(enum movement movement, unsigned char * output) {
+int turn(enum movement movement, unsigned char * output) {
     int bitflag;
     int j;
     if (movement)
@@ -184,18 +190,18 @@ char turn(enum movement movement, unsigned char * output) {
                 snakes[1].movement = average(snakes + 1, output);
                 break;
         }
-        return 0;
+        return (mode)?0:abs(snakes->head-snakes->tail)-(INITIAL_LENGTH-1);
     } else {
-        char i, j, c;
+        return ((mode)?bitflag:abs(snakes->head-snakes->tail)-(INITIAL_LENGTH-1))|0x80000000;
+    }
+}
+
+/*char i, j, c;
         int index = 0;
-        for (i = 0; i <= MAX_SNAKES; i++) {
-            if ((1<<i)&bitflag) {
+        
                 char *temp = "Game over, player   lost\n";
                 for (j = 0; (c = *temp++) != '\0'; j++) output[j+index] = c;
                 output[18 + index] = '0' + i;
                 index  += j;
             }
-        }
-        return 1;
-    }
-}
+        }*/
