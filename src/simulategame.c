@@ -14,8 +14,9 @@ void consoleDisplay(const unsigned char *grid, int x, int y) {
 }
 
 int automatic_game(void) {
-    unsigned char buffer[10*10];
-    game_init(AVERAGE, 10, 10, buffer);
+    int x = 15;
+    unsigned char buffer[x*x];
+    game_init(AVERAGE, x, x, buffer, 1);
     enum movement moves[] = {
         RIGHT,
         OLD,
@@ -28,7 +29,7 @@ int automatic_game(void) {
         gameover = turn(moves[i++%5], buffer);
         if (!gameover) {
             sleep((DWORD)1);
-            consoleDisplay(buffer, 10, 10);
+            consoleDisplay(buffer, x, x);
         } else break;
     };
     puts((char *)buffer);
@@ -38,7 +39,7 @@ int automatic_game(void) {
 int player_game(void) {
     int x = 15;
     unsigned char buff[x*x];
-    game_init(RETARDED, x, x, buff);
+    game_init(RETARDED, x, x, buff, 1);
     enum movement map['w'+1];
     for (char i = 0; i <= 'w'; map[i++] = OLD);
     map['w'] = UP;
@@ -55,5 +56,5 @@ int player_game(void) {
 }
 
 int main(void) {
-    return player_game();
+    return automatic_game();
 }

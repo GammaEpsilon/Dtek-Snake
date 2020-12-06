@@ -4,7 +4,7 @@
 #define APPLE_REPR 127
 #define MAX_SNAKES 2 //Increment if you want to increase the maximum supported snakes
 #define EPSTEIN_KILLED_HIMSELF 0
-#define reset_grid(grid, dimensions) { int i = dimensions.x*dimensions.y; while(i) grid[i--] = 0; }
+#define reset_grid(grid, dimensions) { int i = dimensions.x*dimensions.y; while(i) grid[i] = resetgrid[i--]; }
 #define generate_apple(grid, dimensions) { do { appleLoc = rand()%(dimensions.x*dimensions.y); } while (grid[appleLoc]); grid[appleLoc] = APPLE_REPR; }
 
 #include "snake.h"
@@ -23,7 +23,8 @@ typedef struct snake {
 } snake;
 
 snake snakes[MAX_SNAKES];
-char noOfS;
+char noOfS, structures;
+unsigned char resetgrid[128*32];
 int appleLoc;
 cord dims;
 enum AI mode;
@@ -64,6 +65,19 @@ void init(snake *snake, cord dimensions) {
     snake->movement = RIGHT;
     int i;
     for (i = 1; i--; snake->grow=1) move(snake); //Set initial size to 3
+}
+
+void init_structgrid(cord dims, char multiplayer) {
+    if (multiplayer) {
+        cord arr[] = {{dims.x/4, dims.y/4}, {(int)((double) dims.x/4.0*3.0) + 1, dims.y/4}, {dims.x/4, (int)((double) dims.y/4.0*3.0 + 1)}, {(int)((double) dims.x/4.0*3.0 + 1), (int)((double) dims.y/4.0*3.0 + 1)}};
+        int i, j;
+        for (i = 0; i < 4; i++)
+            for (j = -2; j <= 2; j++) { //Draw crosses
+                resetgrid[(arr[i].y+j)*dims.x+arr[i].x] = 10;
+                resetgrid[arr[i].y*dims.x+arr[i].x+j] = 10;
+            }
+        for (i = 4; i <= dims.x-4; resetgrid[dims.x*(dims.y/2) + (i++)] = 10);
+    }
 }
 
 // Returns != 0 when game over
@@ -133,7 +147,7 @@ enum movement average(const snake *snake, const unsigned char *grid) {
 
 // Exposed functions
 
-char game_init(enum AI ai, int x, int y, unsigned char *grid) {
+char game_init(enum AI ai, int x, int y, unsigned char *grid, char structures) {
     noOfS = 1 + !(!ai);
     mode = ai;
     if (noOfS > MAX_SNAKES) return 0; // Should never happen
@@ -142,6 +156,8 @@ char game_init(enum AI ai, int x, int y, unsigned char *grid) {
     reset_grid(grid, dims);
     int i;
     for (i = 0; i < noOfS; i++) init(snakes + i, dims);
+    if (structures)
+        init_structgrid(dims, ai);
     generate_apple(grid, dims);
     return 1;
 }
