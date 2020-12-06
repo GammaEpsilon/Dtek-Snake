@@ -4,7 +4,7 @@
 #define APPLE_REPR 127
 #define MAX_SNAKES 2 //Increment if you want to increase the maximum supported snakes
 #define EPSTEIN_KILLED_HIMSELF 0
-#define reset_grid(grid, dimensions) { int i = dimensions.x*dimensions.y; while(i) grid[i] = resetgrid[i--]; }
+#define reset_grid(grid, dimensions) { int i = dimensions.x*dimensions.y+1; while(i) grid[i] = resetgrid[i--]; }
 #define generate_apple(grid, dimensions) { do { appleLoc = rand()%(dimensions.x*dimensions.y); } while (grid[appleLoc]); grid[appleLoc] = APPLE_REPR; }
 
 #include "snake.h"
@@ -69,14 +69,14 @@ void init(snake *snake, cord dimensions) {
 
 void init_structgrid(cord dims, char multiplayer) {
     if (multiplayer) {
-        cord arr[] = {{dims.x/4, dims.y/4}, {(int)((double) dims.x/4.0*3.0) + 1, dims.y/4}, {dims.x/4, (int)((double) dims.y/4.0*3.0 + 1)}, {(int)((double) dims.x/4.0*3.0 + 1), (int)((double) dims.y/4.0*3.0 + 1)}};
+        cord arr[] = {{6, 4}, {dims.x-3, 4}, {6, dims.y-5}, {dims.x-3, dims.y-5}}; // I have no idea why these are the constants that position the crosses correctly
         int i, j;
         for (i = 0; i < 4; i++)
             for (j = -2; j <= 2; j++) { //Draw crosses
                 resetgrid[(arr[i].y+j)*dims.x+arr[i].x] = 10;
                 resetgrid[arr[i].y*dims.x+arr[i].x+j] = 10;
             }
-        for (i = 4; i <= dims.x-4; resetgrid[dims.x*(dims.y/2) + (i++)] = 10);
+        for (i = 6; i <= dims.x-3; i++) resetgrid[dims.x*(dims.y/2) + i] = 10;
     }
 }
 
@@ -147,8 +147,9 @@ enum movement average(const snake *snake, const unsigned char *grid) {
 
 // Exposed functions
 
-char game_init(enum AI ai, int x, int y, unsigned char *grid, char structures) {
+char game_init(enum AI ai, int x, int y, unsigned char *grid, char structures, unsigned int seed) {
     noOfS = 1 + !(!ai);
+    srand(seed);
     mode = ai;
     if (noOfS > MAX_SNAKES) return 0; // Should never happen
     dims.x = x;

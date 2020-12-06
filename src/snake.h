@@ -12,7 +12,7 @@ enum AI {NONE, BRAINDEAD, RETARDED, AVERAGE};
  *output
  *returns 0 on fail and 1 on success
  */
-char game_init(enum AI, int, int, unsigned char*, char);
+char game_init(enum AI, int, int, unsigned char*, char, unsigned int);
 /*
  * Arrays with each respective snakes movement
  * output array
