@@ -83,6 +83,8 @@ char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, co
             }
             else //Game over
                 bitflag |= (1<<snakes[i].id); //Set the bit of the corresponding id
+                //int length = (((snakes[i].head)-(snakes[i].tail)) + 1)
+                //highscore(length); //Visa Highscore
         if (!bitflag) { // No point in doing this if game is over...
             if (!i) //Only do this the first iteraiton
                 reset_grid(grid, dimensions); //Reset grid
