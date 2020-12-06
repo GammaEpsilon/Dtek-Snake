@@ -1,18 +1,8 @@
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
-#include "snake.h"  /* Declaarations for this project */
 
 #define DISPLAY_CHANGE_TO_COMMAND_MODE (PORTFCLR = 0x10)
 #define DISPLAY_CHANGE_TO_DATA_MODE (PORTFSET = 0x10)
-
-/* Initilazing relevant ports for I/O */
-void labinit( void )
-{
-  volatile int * MyTRISE = (int *) 0x1F886100;
-  *MyTRISE |= 0xFF;
-  volatile int * MyTRISD = (int *) TRISD; 
-  *MyTRISD &= ~0xFE0;
-}
 
 /* This function is called repetitively from the main program to update the display for the game */
 void display( void )

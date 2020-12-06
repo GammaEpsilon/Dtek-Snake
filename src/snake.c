@@ -1,3 +1,7 @@
+// Game logic of snake game
+// Author: Erik Hedlund
+// Version: 2020-12-06
+
 #include <stdlib.h>
 
 #define SNAKE_BUFFER 255
@@ -103,8 +107,6 @@ char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, co
             }
             else //Game over
                 bitflag |= (1<<snakes[i].id); //Set the bit of the corresponding id
-                //int length = (((snakes[i].head)-(snakes[i].tail)) + 1)
-                //highscore(length); //Visa Highscore
         if (!bitflag) { // No point in doing this if game is over...
             if (!i) //Only do this the first iteraiton
                 reset_grid(grid, dimensions); //Reset grid
@@ -195,13 +197,3 @@ int turn(enum movement movement, unsigned char * output) {
         return ((mode)?bitflag:abs(snakes->head-snakes->tail)-(INITIAL_LENGTH-1))|0x80000000;
     }
 }
-
-/*char i, j, c;
-        int index = 0;
-        
-                char *temp = "Game over, player   lost\n";
-                for (j = 0; (c = *temp++) != '\0'; j++) output[j+index] = c;
-                output[18 + index] = '0' + i;
-                index  += j;
-            }
-        }*/
