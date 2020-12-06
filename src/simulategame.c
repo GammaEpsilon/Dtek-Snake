@@ -14,37 +14,37 @@ void consoleDisplay(const unsigned char *grid, int x, int y) {
 }
 
 int automatic_game(void) {
-    unsigned char buffer[30*30], gameover;
-    game_init(2, 30, 30, buffer);
-    enum movement moves[][2] = {
-        {RIGHT, RIGHT},
-        {OLD, OLD},
-        {OLD, OLD},
-        {DOWN, UP},
-        {OLD, OLD}
+    unsigned char buffer[10*10];
+    game_init(AVERAGE, 10, 10, buffer);
+    enum movement moves[] = {
+        RIGHT,
+        OLD,
+        OLD,
+        DOWN,
+        OLD
     };
     int i = 0;
     for (char gameover; 1;) { 
         gameover = turn(moves[i++%5], buffer);
         if (!gameover) {
             sleep((DWORD)1);
-            consoleDisplay(buffer, 30, 30);
+            consoleDisplay(buffer, 10, 10);
         } else break;
     };
-    puts(buffer);
+    puts((char *)buffer);
     return 0;
 }
 
 int player_game(void) {
     int x = 15;
     unsigned char buff[x*x];
-    game_init(1, x, x, buff);
-    enum movement map['w'+1][1];
-    for (char i = 0; i <= 'w'; map[i++][0] = OLD);
-    map['w'][0] = UP;
-    map['a'][0] = LEFT;
-    map['s'][0] = DOWN;
-    map['d'][0] = RIGHT;
+    game_init(RETARDED, x, x, buff);
+    enum movement map['w'+1];
+    for (char i = 0; i <= 'w'; map[i++] = OLD);
+    map['w'] = UP;
+    map['a'] = LEFT;
+    map['s'] = DOWN;
+    map['d'] = RIGHT;
     while (1) {
         for (char c; (c = getchar()) != '\n'; consoleDisplay(buff, x, x))
             if (turn(map[c], buff)) {
