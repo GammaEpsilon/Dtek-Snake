@@ -1,4 +1,4 @@
-/*#include <stdio.h>
+#include <stdio.h>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -37,10 +37,11 @@ int automatic_game(void) {
 }
 
 int player_game(void) {
-    int x = 15;
+    int x = 128;
+    int y = 32;
     enum AI ai = NONE;
-    unsigned char buff[x*x];
-    game_init(ai, x, x, buff, 0, 0);
+    unsigned char buff[x*y];
+    game_init(ai, x, y, buff, 0, 0);
     enum movement map['w'+1];
     for (char i = 0; i <= 'w'; map[i++] = OLD);
     map['w'] = UP;
@@ -48,7 +49,7 @@ int player_game(void) {
     map['s'] = DOWN;
     map['d'] = RIGHT;
     for (int gameover; 1;) {
-        for (char c; (c = getchar()) != '\n'; consoleDisplay(buff, x, x))
+        for (char c; (c = getchar()) != '\n'; consoleDisplay(buff, x, y))
             if ((gameover = turn(map[c], buff)) < 0) {
                 if (ai) {
                     for (int i = 0; i <= 2; i++)
@@ -63,4 +64,3 @@ int player_game(void) {
 int main(void) {
     return player_game();
 }
-*/

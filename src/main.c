@@ -132,6 +132,9 @@ int main(void) {
     }
     */
    //TODO Remove
-   for (i = 0; i<(128*32); display_changepixel(i++, 0)); //Make entire screen black
-   for (i = (128*32)/2-5; i< (128*32)/2+1; display_changepixel(i++, 0xff)); //Hopefully draw an white line somewhere close to the middle
+   unsigned char grid[128*32];
+   for (i = 0; i<(128*32); display_changepixel(i++, 0, grid)) //Make entire screen black
+    grid[i] = 0;
+   for (i = (128*32)/2-5; i< (128*32)/2+1; display_changepixel(i++, 0xff, grid)) //Hopefully draw an white line somewhere close to the middle
+    grid[i] = 1;
 }
