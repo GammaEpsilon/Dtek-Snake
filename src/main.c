@@ -1,10 +1,10 @@
 // Main function of snake game
 // Author: Erik Hedlund
 // Version: 2020-12-06
-#include "snake.h"
 #include <stdint.h>
 #include "IOcontrols.h"
-
+#include "snake.h"
+#include "clock.h"
 #define cleartext() {int i = 3; while(i) display_string(i, "");}
 enum state {MENU, GAME, SCOREBOARD, ERROR};
 
@@ -32,11 +32,11 @@ enum state game() {
     unsigned int returnVal, i, buttons;
     unsigned char grid[x*y];
     int switches = getsw(); // Switch 1 and 2 determines AI level, switch 3 determines structures
-    unsigned int seed = switches; //To be elapsed time since boot, maybe
+    unsigned int seed = (int)&switches|(int)&returnVal; //Should be random enough
     if (! game_init(switches&0x3, x, y, grid, switches&0x4, seed)) return ERROR; //Something went wrong...
+    initclock((switches>>3)&1);
     do {
         enum movement move, controlMap[] = {LEFT, UP, RIGHT, DOWN}; // Map index corresponds to button id-1, lower index gives priority
-        for (i = 0; i < 1 + (switches>>3)&1; i++) /*sleep()*/; //Sleep twice as long if switch 4 is high
         if (!(buttons = getbtns()))
             move = OLD; //Set old if no new input at timeout
         else
@@ -46,6 +46,7 @@ enum state game() {
                     break;
                 }
         returnVal = turn(move, grid);
+        wait(); //Sleep twice as long if switch 4 is high
         //TODO Show grid
     } while (! returnVal&~0x80000000);
     if (switches&0x3) { // If multiplayer
