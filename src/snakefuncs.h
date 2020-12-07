@@ -3,8 +3,8 @@
 
 /* snakefuncs.h
    Header file for the snake game.
-   This file written 2020 by T Vinsa and E Hedlund
-   Some parts are original code written by A Isaksson and F Lundevall
+   This file modified 2020 by T Vinsa and E Hedlund
+   Most parts are original code written by A Isaksson and F Lundevall in mipslabsfunc
 
    Latest update 2020-12-06 by T Vinsa and E Hedlund
 
@@ -12,15 +12,15 @@
 
 /* Declare display-related functions from snakefuncs.c */
 void display_image(int x, const uint8_t *data);
-void display_init(void);
 void display_string(int line, char *s);
 void display_update(void);
 uint8_t spi_send_recv(uint8_t data);
+void lab_init(void);
+void quicksleep(int cyc);
 
 /* Declare lab-related functions from mipslabfunc.c */
-char * itoaconv( int num );
 void testHighscore(void);
-void quicksleep(int cyc);
+void display_changepixel(int, unsigned char);
 void itoa(int x, char * buf);
 int strcpy(char * dest, const char *src);
 

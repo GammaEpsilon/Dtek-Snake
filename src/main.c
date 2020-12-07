@@ -107,9 +107,12 @@ enum state error() {
     while(1); // Sleep forever
 }
 
+
 int main(void) {
+    int i;
     enum state state = MENU;
     program_init();
+    /* TODO Take back
     while (1500) {
         cleartext()
         switch(state) { //Our fancy state machine
@@ -127,4 +130,8 @@ int main(void) {
                 break;
         }
     }
+    */
+   //TODO Remove
+   for (i = 0; i<(128*32); display_changepixel(i++, 0)); //Make entire screen black
+   for (i = (128*32)/2-5; i< (128*32)/2+1; display_changepixel(i++, 0xff)); //Hopefully draw an white line somewhere close to the middle
 }
