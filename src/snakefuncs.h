@@ -1,3 +1,6 @@
+#ifndef SNAKEFUNCS_H
+#define SNAKEFUNCS_H
+
 /* snakefuncs.h
    Header file for the snake game.
    This file written 2020 by T Vinsa and E Hedlund
@@ -39,14 +42,4 @@ extern const uint8_t const font[128*8];
 extern const uint8_t const icon[128];
 /* Declare text buffer for display output */
 extern char textbuffer[4][16];
-
-/* Declare functions written by students.
-   Note: Since we declare these functions here,
-   students must define their functions with the exact types
-   specified in the laboratory instructions. */
-/* Written as part of asm lab: delay, time2string */
-
-/* Written as part of i/o lab: getbtns, getsw, enable_interrupt */
-int getbtns(void);
-int getsw(void);
-void enable_interrupt(void);
+#endif

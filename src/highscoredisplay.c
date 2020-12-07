@@ -26,18 +26,9 @@ typedef struct score {
 score highscores[3] = {NEW_SCORE, NEW_SCORE, NEW_SCORE};
 
 /* Interrupt Service Routine */
-void user_isr( void )
+void user_isr( void ) //Den här är väl helt onödig?
 {
   return;
-}
-
-/* initialize buttons */
-void enablebuttons( void )
-{
-  volatile int * MyTRISE = (int *) 0x1F886100;
-  *MyTRISE |= 0xFF;
-  volatile int * MyTRISD = (int *) TRISD; 
-  *MyTRISD &= ~0xFE0;
 }
 
 // Displays the current highscores
@@ -69,11 +60,12 @@ void highscore(int snakelength, char* name) {
       break;
     }
 	}
+  return;/* Det här ska inte göras här
 	display_string(0, "Scores!:");
 	testinghighscore(1, highscores);
 	testinghighscore(2, highscores+1);
 	testinghighscore(3, highscores+2);
-	display_update();
+	display_update();*/
 }
 
 // Returns 1 if x > lowest highscore, 0 otherwise
