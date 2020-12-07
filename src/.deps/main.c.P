@@ -1,6 +1,6 @@
-main.c.o: main.c snake.h /opt/mcb32tools/include/stdint.h \
+main.c.o: main.c /opt/mcb32tools/include/stdint.h \
  /opt/mcb32tools/lib/gcc/mipsel-mcb32-elf/4.9.2/include/stdint-gcc.h \
- IOcontrols.h
-main.c snake.h /opt/mcb32tools/include/stdint.h :
+ IOcontrols.h snake.h clock.h snakefuncs.h
+main.c /opt/mcb32tools/include/stdint.h :
  /opt/mcb32tools/lib/gcc/mipsel-mcb32-elf/4.9.2/include/stdint-gcc.h :
- IOcontrols.h :
+ IOcontrols.h snake.h clock.h snakefuncs.h :

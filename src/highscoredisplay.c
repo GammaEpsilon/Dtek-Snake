@@ -56,7 +56,7 @@ void enter_highscore(int snakelength, char* name) {
       strcpy(tempName, highscores[i].name);
       highscores[i].score = snakelength;
 			strcpy(highscores[i].name, name);
-      highscore(tempscore, tempName);
+      enter_highscore(tempscore, tempName);
       break;
     }
 	}

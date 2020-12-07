@@ -1,16 +1,15 @@
-#include <stdio.h>
 
 #ifdef _WIN32
+#include <stdio.h>
 #include <Windows.h>
-#else
-#include <unistd.h>
-#endif
 
 #include "snake.h"
 
+
 void consoleDisplay(const unsigned char *grid, int x, int y) {
     system("cls");
-    for (int i = 0; i < x*y; printf("%02x%c", -grid[i]&0xff, '\n'*!(++i%x)));
+    int i;
+    for (i = 0; i < x*y; printf("%02x%c", -grid[i]&0xff, '\n'*!(++i%x)));
 }
 
 int automatic_game(void) {
@@ -64,3 +63,4 @@ int player_game(void) {
 int main(void) {
     return player_game();
 }
+#endif

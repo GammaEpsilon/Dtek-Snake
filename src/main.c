@@ -35,7 +35,7 @@ void display(const unsigned char *grid) {
 enum state menu() {
     display_string(0, "Welcome to");
 	display_string(1, "Hedlund's");
-	display_string(2, "Vinsa's");
+	display_string(2, "and Vinsa's");
 	display_string(3, "snake game!");
     display_update();
     int buttons, i;
@@ -80,7 +80,7 @@ enum state game() {
     int switches = getsw(); // Switch 1 and 2 determines AI level, switch 3 determines structures
     unsigned int seed = (int)&switches|(int)&returnVal; //Should be random enough
     if (! game_init(switches&0x3, x, y, grid, switches&0x4, seed)) return ERROR; //Something went wrong...
-    initclock((switches>>3)&1);
+    clockinit((switches>>3)&1);
     do {
         enum movement move, controlMap[] = {DOWN, RIGHT, UP, LEFT}; // Map index corresponds to button id-1, lower index gives priority
         if (!(buttons = getbtns()))
@@ -117,10 +117,19 @@ enum state game() {
         }
         
 }
-enum state view_scoreboard();
+enum state view_scoreboard() {
+    enum state exitpoints[] = {MENU};
+    int buttons = 0;
+    int i = 1;
+    wait();
+    while (!((buttons = getbtns())&0x4)); // Maybe sleep to ease up performance
+        if (buttons&i)
+            return exitpoints[i-1];
+}
 
 enum state error() {
     display_string(0, "ERROR");
+    display_update();
     while(1); // Sleep forever
 }
 
@@ -129,7 +138,7 @@ int main(void) {
     int i,j;
     enum state state = MENU;
     program_init();
-    initclock(HALFSECOND);
+    clockinit(HALFSECOND);
     while (1500) {
         cleartext()
         switch(state) { //Our fancy state machine

@@ -159,22 +159,38 @@ void display_update(void) {
   }
 */
 
+void display_changepage(unsigned char byte, unsigned char page, unsigned char collum) {
+	int i;
+    DISPLAY_CHANGE_TO_COMMAND_MODE;
+    spi_send_recv(0x20);
+    spi_send_recv(0x0);
+    spi_send_recv(0x21);
+    for (i = 0; i < 2; i++)
+        spi_send_recv(collum); //Set correct collum
+    spi_send_recv(0x22);
+    for (i = 0; i < 2; i++)
+        spi_send_recv(page); //Set correct page
+
+    DISPLAY_CHANGE_TO_DATA_MODE;
+    spi_send_recv(byte);
+}
+
 void display_changepixel(int pixelIndex, unsigned char on, const unsigned char *grid) {
 	int i;
-	int bit = (pixelIndex-page)/128;
 	int page = pixelIndex/(128*8);
+	int bit = (pixelIndex-page)/128;
 	int collum = pixelIndex%128;
 	char updateData = 0;
 	for (i = 0; i < 8; i++) {
 		if (grid[128*(page+i)+collum])
-			updateData |= (1<<i)
+			updateData |= (1<<i);
 		else
-			updateData &= ~(1<<i)
+			updateData &= ~(1<<i);
 	}
 	if (on)
-		updateData |= (1<<bit)
+		updateData |= (1<<bit);
 	else
-		updateData &= ~(1<<bit)
+		updateData &= ~(1<<bit);
 	
 	DISPLAY_CHANGE_TO_COMMAND_MODE;
 	spi_send_recv(0x20);

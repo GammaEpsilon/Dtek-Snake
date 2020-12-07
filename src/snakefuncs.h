@@ -21,6 +21,7 @@ void quicksleep(int cyc);
 /* Declare lab-related functions from mipslabfunc.c */
 void testHighscore(void);
 void display_changepixel(int, unsigned char, const unsigned char*);
+void display_changepage(unsigned char byte, unsigned char page, unsigned char collum);
 void itoa(int x, char * buf);
 int strcpy(char * dest, const char *src);
 

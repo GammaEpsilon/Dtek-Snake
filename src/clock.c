@@ -3,6 +3,8 @@
 
 #include "clock.h"
 
+void *stdin, *stdout, *stderr;
+
 //Slightly modified code from lab 3
 //Based on example code 14-4
 void clockinit(enum mode mode) {
