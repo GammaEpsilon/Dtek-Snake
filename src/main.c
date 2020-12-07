@@ -121,6 +121,7 @@ enum state view_scoreboard() {
     enum state exitpoints[] = {MENU};
     int buttons = 0;
     int i = 1;
+    display_highscores();
     wait();
     while (!((buttons = getbtns())&0x4)); // Maybe sleep to ease up performance
         if (buttons&i)
