@@ -6,6 +6,8 @@
 #include "snake.h"
 #include "clock.h"
 #include "snakefuncs.h"
+#include "highscoredisplay.h"
+
 #define cleartext() {int i = 3; while(i>-1) display_string(i--, ""); display_update();}
 enum state {MENU, GAME, SCOREBOARD, ERROR};
 
