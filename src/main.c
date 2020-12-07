@@ -10,6 +10,7 @@
 #include "highscoredisplay.h"
 
 #define cleartext() {int i = 3; while(i>-1) display_string(i--, ""); display_update();}
+#define wait(count) {int x = count; do { while(!((IFS(0)) & 0x100)) IFS(0) &= ~0x100; } while(--x)}
 enum state {MENU, GAME, SCOREBOARD, ERROR};
 
 void *stdin, *stdout, *stderr;
@@ -151,12 +152,9 @@ int main(void) {
     int i,j;
     enum state state = MENU;
     program_init();
-    //clockinitiate();
+    clockinitiate();
     while (1500) {
-        clockinit(10);
-        /*while(!((IFS(0)) & 0x100)) {
-            IFS(0) &= ~0x100; //Reset:a timeoutflag
-        }*/
+        wait(10);
         cleartext()
         switch(state) { //Our fancy state machine
             case MENU:
