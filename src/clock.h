@@ -1,4 +1,4 @@
-#ifdef CLOCK_H
+#ifndef CLOCK_H
 #define CLOCK_H
 
 enum mode {SECOND, HALFSECOND};
