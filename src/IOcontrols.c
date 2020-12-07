@@ -22,7 +22,7 @@ int getsw( void ) {
 
 int getbtns(void) {
     volatile int* myPORTD = PORTD;
-    return (*myPORTD>>4)&0xE;
+    return ((*myPORTD>>4)&0xE)|getbtn1();
 }
 
 int getbtn1(void) {
