@@ -5,7 +5,8 @@
 #include "IOcontrols.h"
 #include "snake.h"
 #include "clock.h"
-#define cleartext() {int i = 3; while(i) display_string(i, "");}
+#include "snakefuncs.h"
+#define cleartext() {int i = 3; while(i>-1) display_string(i--, "");}
 enum state {MENU, GAME, SCOREBOARD, ERROR};
 
 void *stdin, *stdout, *stderr;
@@ -13,12 +14,14 @@ void *stdin, *stdout, *stderr;
 void program_init() {
     //All program initlization goes here
     control_init();
+    lab_init();
 }
 
 enum state menu() {
-    display_string(0, "Snake");
-    display_string(1, "Btn1: Play Game");
-    display_string(2, "Btn2: View Score");
+    display_string(0, "Welcome to");
+	display_string(1, "Erik Hedlund's");
+	display_string(2, "Tobias Vinsa's");
+	display_string(3, "snake game!");
     int buttons, i;
     enum state exitpoints[] = {GAME, SCOREBOARD};
     while (!((buttons = getbtns())&0x3)); // Maybe sleep to ease up performance
@@ -59,7 +62,8 @@ enum state game() {
                 display_string(seed, temp);
                 seed++;
             }
-        display_string(seed, "Press button to continue");
+        display_string(seed++, "Press button");
+        display_string(seed,  "to continue");
         while (!getbtns());
         return MENU;
         } else {
