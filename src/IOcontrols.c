@@ -20,7 +20,7 @@ int getsw( void ) {
     return (*myPORTD>>8)&0xF;
 }
 
-int getbtns(void) { //TODO Add BTN1
+int getbtns(void) {
     volatile int* myPORTD = PORTD;
     return (*myPORTD>>4)&0xE;
 }
