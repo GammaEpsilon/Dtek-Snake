@@ -95,7 +95,8 @@ void edit_scoreboard(unsigned int score) {
         }
     //INSERT INTO SCOREBOARD(score, textrep)
     if(wouldgetin(score))
-        highscore(score, textrep);
+        enter_highscore(score, textrep);
+    display_highscores();
 }
 enum state error() {
     display_string(0, "ERROR");

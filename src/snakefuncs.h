@@ -21,6 +21,8 @@ uint8_t spi_send_recv(uint8_t data);
 char * itoaconv( int num );
 void testHighscore(void);
 void quicksleep(int cyc);
+void itoa(int x, char * buf);
+int strcpy(char * dest, const char *src);
 
 /* Declare display_debug - a function to help debugging.
 

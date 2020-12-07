@@ -47,7 +47,7 @@ void testinghighscore(int line, score *s) {
 }
 
 // Updates the highscore if a new highscore is reached. Maximum 3 highscore positions
-void highscore(int snakelength, char* name) {
+void enter_highscore(int snakelength, char* name) {
 	int i;
 	for(i=0;i < 3; i++) { //säg att 3 platser visas på vårt highscore bord
     if(snakelength > highscores[i].score) {
@@ -60,12 +60,16 @@ void highscore(int snakelength, char* name) {
       break;
     }
 	}
-  return;/* Det här ska inte göras här
+  return;
+}
+
+void display_highscores(void) {
 	display_string(0, "Scores!:");
 	testinghighscore(1, highscores);
 	testinghighscore(2, highscores+1);
 	testinghighscore(3, highscores+2);
-	display_update();*/
+	display_update();
+  return;
 }
 
 // Returns 1 if x > lowest highscore, 0 otherwise
