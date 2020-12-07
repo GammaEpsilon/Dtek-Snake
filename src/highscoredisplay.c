@@ -1,69 +1,83 @@
+/* highscoredisplay.c
+
+   This file written 2020 by T Vinsa and E Hedlund
+
+   Some parts are original code written by F Lundevall 
+   Updated 2017-04-21 by F Lundevall
+
+   Latest update 2020-12-06 by T Vinsa and E Hedlund
+
+   For copyright and licensing, see file COPYING */
+
+
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
-#include "snake.h"  /* Declatations for these labs */
+#include "snakefuncs.h"  /* Declaratations for the game */
 
-#define DISPLAY_CHANGE_TO_COMMAND_MODE (PORTFCLR = 0x10)
-#define DISPLAY_CHANGE_TO_DATA_MODE (PORTFSET = 0x10)
+void *stdin, *stdout, *stderr;
 
-#define highscores int[5];
+typedef struct score {
+  char name[4];
+  int score;
+} score;
 
-//Displays the current highscores and the players result this game
-void highscore(snakelength) {
-    //Fix a static highscore image
-    //skapa en array som håller highscore värden och sedan presenta top 3/5 etc. Kolla sedan om det sista elementet på 
-        int i = 0 //säg att 5 platser visas på vårt highscore bord
-        for(i;i < 5; i++) {
-            if(highscores[i] != NULL) {
-                if(snakelength > highscores[i]) {
-                    int tempscore = highscores[i];
-                    highscores[i] = snakelength;
-                    highscore(tempscore) //skicka rekursvit in tempscore för att byta ut de andra highscorsen när vi byter ut ett tidigare i listan
-                }
-            }
-			else {
-            highscores[i] = snakelength;
-            break;
-			}
-        }
-    display_highscore(3, highscores);
-    display_update();
+#define NEW_SCORE { "nul", 0 }
+
+score highscores[3] = {NEW_SCORE, NEW_SCORE, NEW_SCORE};
+
+/* Interrupt Service Routine */
+void user_isr( void )
+{
+  return;
 }
 
-void display_highscore(int line, int[] *s) {
-	int i;
+/* initialize buttons */
+void enablebuttons( void )
+{
+  volatile int * MyTRISE = (int *) 0x1F886100;
+  *MyTRISE |= 0xFF;
+  volatile int * MyTRISD = (int *) TRISD; 
+  *MyTRISD &= ~0xFE0;
+}
+
+// Displays the current highscores
+void testinghighscore(int line, score *s) {
 	if(line < 0 || line >= 4)
 		return;
 	if(!s)
 		return;
-	
-	for(i = 0; i < 16; i++)
-		if(*s) {
-			textbuffer[line][i] = *s;
-			s++;
-		} else
-			textbuffer[line][i] = ' ';
+			
+  strcpy(textbuffer[line], s->name);
+	textbuffer[line][4] = ' ';
+  char buff[10];
+  itoa(s->score, buff);
+  strcpy(textbuffer[line] + 4, buff);
+  textbuffer[line][3] = ' '; //Insertspace
 }
 
-void display_update(void) {
-	int i, j, k;
-	int c;
-	for(i = 0; i < 4; i++) {
-		DISPLAY_CHANGE_TO_COMMAND_MODE;
-		spi_send_recv(0x22);
-		spi_send_recv(i);
-		
-		spi_send_recv(0x0);
-		spi_send_recv(0x10);
-		
-		DISPLAY_CHANGE_TO_DATA_MODE;
-		
-		for(j = 0; j < 16; j++) {
-			c = textbuffer[i][j];
-			if(c & 0x80)
-				continue;
-			
-			for(k = 0; k < 8; k++)
-				spi_send_recv(font[c*8 + k]);
-		}
+// Updates the highscore if a new highscore is reached. Maximum 3 highscore positions
+void highscore(int snakelength, char* name) {
+	int i;
+	for(i=0;i < 3; i++) { //säg att 3 platser visas på vårt highscore bord
+    if(snakelength > highscores[i].score) {
+      char tempName[4];
+      int tempscore = highscores[i].score;
+      strcpy(tempName, highscores[i].name);
+      highscores[i].score = snakelength;
+			strcpy(highscores[i].name, name);
+      highscore(tempscore, tempName);
+      break;
+    }
 	}
+	display_string(0, "Scores!:");
+	testinghighscore(1, highscores);
+	testinghighscore(2, highscores+1);
+	testinghighscore(3, highscores+2);
+	display_update();
+}
+
+// Returns 1 if x > lowest highscore, 0 otherwise
+char wouldgetin(int x) {
+  if(x > highscores[2].score) return 1;
+  return 0;
 }

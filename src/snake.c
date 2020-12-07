@@ -4,6 +4,8 @@
 
 #include <stdlib.h>
 
+#include "snake.h"
+
 #define SNAKE_BUFFER 255
 #define APPLE_REPR 127
 #define MAX_SNAKES 2 //Increment if you want to increase the maximum supported snakes
@@ -13,7 +15,7 @@
 #define generate_apple(grid, dimensions) { do { appleLoc = rand()%(dimensions.x*dimensions.y); } while (grid[appleLoc]); grid[appleLoc] = APPLE_REPR; }
 #define abs(x) ((x >= 0) ? x:-x)
 
-#include "snake.h"
+void *stdin, *stdout, *stderr;
 
 typedef struct cord {
     unsigned char x, y;
