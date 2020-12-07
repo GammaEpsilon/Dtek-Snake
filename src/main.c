@@ -139,12 +139,6 @@ enum state error() {
 }
 
 void clockinitiate(void) {
-    volatile int * MyTRISE = (int *) 0x1F886100;
-    volatile int * MyTRISD = TRISD;
-    volatile int * MyTRISF = TRISF;
-    *MyTRISE |= 0xFF;
-    *MyTRISD &= ~0xFE0;
-    *MyTRISF |= 0x2;
     PR2 = (80000000/256)/10; //Sätt till korrekt värde för 100ms timeout 0x3D
     T2CON = 0x0;
     TMR2 = 0x0;
@@ -157,12 +151,12 @@ int main(void) {
     int i,j;
     enum state state = MENU;
     program_init();
-    clockinitiate();
+    //clockinitiate();
     while (1500) {
-        //clockinit(10);
-        while(!((IFS(0)) & 0x100)) {
+        clockinit(10);
+        /*while(!((IFS(0)) & 0x100)) {
             IFS(0) &= ~0x100; //Reset:a timeoutflag
-        }
+        }*/
         cleartext()
         switch(state) { //Our fancy state machine
             case MENU:
