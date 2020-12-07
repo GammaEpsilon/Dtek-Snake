@@ -9,8 +9,9 @@
 
   //Initilazing relevant ports for I/O 
 void control_init(void)
-{ //TODO add initilization of BTN1
+{ volatile int * MyTRISF = TRISF;
   volatile int * MyTRISD = (int *) TRISD; 
+  *MyTRISF |= 0x2;
   *MyTRISD &= ~0xFE0;
 }
 
@@ -22,4 +23,9 @@ int getsw( void ) {
 int getbtns(void) { //TODO Add BTN1
     volatile int* myPORTD = PORTD;
     return (*myPORTD>>4)&0xE;
+}
+
+int getbtn1(void) {
+    volatile int* myPORTF = PORTF;
+		return (*myPORTF>>1)&0x1;
 }
