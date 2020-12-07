@@ -2,6 +2,7 @@
 // Author: Erik Hedlund
 // Version: 2020-12-06
 #include <stdint.h>
+#include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "IOcontrols.h"
 #include "snake.h"
 #include "clock.h"
@@ -75,6 +76,7 @@ void edit_scoreboard(unsigned int score) {
     enter_highscore(score, textrep);
 }
 enum state game() {
+    int j = 3;
     const int x = 128;
     const int y = 32;
     unsigned int returnVal, i, buttons;
@@ -82,7 +84,7 @@ enum state game() {
     int switches = getsw(); // Switch 1 and 2 determines AI level, switch 3 determines structures
     unsigned int seed = (int)&switches|(int)&returnVal; //Should be random enough
     if (! game_init(switches&0x3, x, y, grid, switches&0x4, seed)) return ERROR; //Something went wrong...
-    clockinit((switches>>3)&1);
+    clockinit((((switches>>3)&1)+1)*5);
     do {
         enum movement move, controlMap[] = {DOWN, RIGHT, UP, LEFT}; // Map index corresponds to button id-1, lower index gives priority
         if (!(buttons = getbtns()))
@@ -96,7 +98,7 @@ enum state game() {
         returnVal = turn(move, grid);
         display(grid);
         wait();
-    } while (! returnVal&~0x80000000);
+    } while (--j); // removed earlier ! returnVal&~0x80000000
     if (switches&0x3) { // If multiplayer
         seed = 0; // No need to preserve seed anymore
         int i;
@@ -136,13 +138,31 @@ enum state error() {
     while(1); // Sleep forever
 }
 
+void clockinitiate(void) {
+    volatile int * MyTRISE = (int *) 0x1F886100;
+    volatile int * MyTRISD = TRISD;
+    volatile int * MyTRISF = TRISF;
+    *MyTRISE |= 0xFF;
+    *MyTRISD &= ~0xFE0;
+    *MyTRISF |= 0x2;
+    PR2 = (80000000/256)/10; //Sätt till korrekt värde för 100ms timeout 0x3D
+    T2CON = 0x0;
+    TMR2 = 0x0;
+    T2CONSET = 0X0070;
+    T2CONSET = 0X8070;
+}
+
 
 int main(void) {
     int i,j;
     enum state state = MENU;
     program_init();
-    clockinit(HALFSECOND);
+    clockinitiate();
     while (1500) {
+        //clockinit(10);
+        while(!((IFS(0)) & 0x100)) {
+            IFS(0) &= ~0x100; //Reset:a timeoutflag
+        }
         cleartext()
         switch(state) { //Our fancy state machine
             case MENU:
