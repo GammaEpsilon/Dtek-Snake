@@ -1,4 +1,4 @@
-#include <stdio.h>
+/*#include <stdio.h>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -63,3 +63,4 @@ int player_game(void) {
 int main(void) {
     return player_game();
 }
+*/

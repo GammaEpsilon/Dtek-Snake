@@ -3,9 +3,11 @@
 // Author: Tobias Vinsa
 // Version: 2020-12-06
 
+#include <stdint.h>
 #include <pic32mx.h>
+#include "snakefuncs.h" 
 
-/* Initilazing relevant ports for I/O */
+  //Initilazing relevant ports for I/O 
 void control_init(void)
 { //TODO add initilization of BTN1
   volatile int * MyTRISD = (int *) TRISD; 

@@ -1,11 +1,14 @@
 // Main function of snake game
 // Author: Erik Hedlund
 // Version: 2020-12-06
-
 #include "snake.h"
+#include <stdint.h>
 #include "IOcontrols.h"
-#define cleartext() {int i = 3; while(i) display_line(i, "");}
+
+#define cleartext() {int i = 3; while(i) display_string(i, "");}
 enum state {MENU, GAME, SCOREBOARD, ERROR};
+
+void *stdin, *stdout, *stderr;
 
 void program_init() {
     //All program initlization goes here
@@ -13,9 +16,9 @@ void program_init() {
 }
 
 enum state menu() {
-    display_line(0, "Snake");
-    display_line(1, "Btn1: Play Game");
-    display_line(2, "Btn2: View Score");
+    display_string(0, "Snake");
+    display_string(1, "Btn1: Play Game");
+    display_string(2, "Btn2: View Score");
     int buttons, i;
     enum state exitpoints[] = {GAME, SCOREBOARD};
     while (!((buttons = getbtns())&0x3)); // Maybe sleep to ease up performance
@@ -47,14 +50,15 @@ enum state game() {
     } while (! returnVal&~0x80000000);
     if (switches&0x3) { // If multiplayer
         seed = 0; // No need to preserve seed anymore
-        for (int i = 0; i < 2; i++)
+        int i;
+        for (i = 0; i < 2; i++)
             if ((1<<i)&returnVal) {
                 char temp[] = "Player   lost!";
                 temp[7] = i + '0';
-                display_line(seed, temp);
+                display_string(seed, temp);
                 seed++;
             }
-        display_line(seed, "Press button to continue");
+        display_string(seed, "Press button to continue");
         while (!getbtns());
         return MENU;
         } else {
@@ -71,15 +75,15 @@ void edit_scoreboard(unsigned int score) {
     char textrep[4] = "aaa";
     char index, i;
     buff[3] = '\0';
-    display_line(0, "Enter name:");
-    display_line(1, textrep);
+    display_string(0, "Enter name:");
+    display_string(1, textrep);
     for (index = 0; index < 4; buttons = getbtns())
         if (buttons) {
             if (buttons&3) {
                 buff[index] += (buttons>>1)&1 - (buttons&1);
                 buff[index] %= ('z' - 'a'); // Roll over if neccessary
                 for (i = 0; i < 3; i++) textrep[i] = buff[i] + 'a';
-                display_line(1, textrep);
+                display_string(1, textrep);
             }
             if (buttons&0xc) {
                 if (buttons&4 && !index) //If index = 0 we are going to have a bad time, m'key
@@ -89,9 +93,11 @@ void edit_scoreboard(unsigned int score) {
             }
         }
     //INSERT INTO SCOREBOARD(score, textrep)
+    if(wouldgetin(score))
+        highscore(score, textrep);
 }
 enum state error() {
-    display_line(0, "ERROR");
+    display_string(0, "ERROR");
     while(1); // Sleep forever
 }
 

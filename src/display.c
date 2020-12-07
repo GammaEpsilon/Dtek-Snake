@@ -1,10 +1,12 @@
-#include <stdint.h>   /* Declarations of uint_32 and the like */
-#include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 
+/*    IDK wut to do
+
+#include <stdint.h>    Declarations of uint_32 and the like 
+#include <pic32mx.h>  Declarations of system-specific addresses etc 
 #define DISPLAY_CHANGE_TO_COMMAND_MODE (PORTFCLR = 0x10)
 #define DISPLAY_CHANGE_TO_DATA_MODE (PORTFSET = 0x10)
 
-/* This function is called repetitively from the main program to update the display for the game */
+ This function is called repetitively from the main program to update the display for the game 
 void display( void )
 {
   int buttons, switches, i;
@@ -50,4 +52,4 @@ void display_update(unsigned char [][]gameMap) {
 		}
 	}
 }
-
+*/
