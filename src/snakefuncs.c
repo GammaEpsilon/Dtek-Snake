@@ -122,7 +122,7 @@ void display_update(void) {
 		
 		DISPLAY_CHANGE_TO_DATA_MODE;
 		
-		for(j = 0; j < 10; j++) {
+		for(j = 0; j < 16; j++) {
 			c = textbuffer[i][j];
 			if(c & 0x80)
 				continue;

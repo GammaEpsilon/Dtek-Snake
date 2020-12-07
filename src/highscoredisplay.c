@@ -44,6 +44,8 @@ void testinghighscore(int line, score *s) {
   itoa(s->score, buff);
   strcpy(textbuffer[line] + 4, buff);
   textbuffer[line][3] = ' '; //Insertspace
+  int i = 5;
+  for(i; i<16;i++) textbuffer[line][i] = ' ';
 }
 
 // Updates the highscore if a new highscore is reached. Maximum 3 highscore positions
