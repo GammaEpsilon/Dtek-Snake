@@ -164,7 +164,6 @@ void display_entire_oled(const unsigned char *byte) {
     DISPLAY_CHANGE_TO_COMMAND_MODE;
     spi_send_recv(0x20);
 	spi_send_recv(0x0);
-	
     spi_send_recv(0x22);
     spi_send_recv(0x0);
     spi_send_recv(0x3);

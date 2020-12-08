@@ -77,7 +77,7 @@ enum state menu() {
     enum state exitpoints[] = {GAME, SCOREBOARD};
     dirty_wait(5);
     while (!((buttons = getbtns())&0x3)) {
-        timeinmenu += TMR2/10
+        timeinmenu += TMR2/10;
         TMR2 = 0;
     }
     for (i = 1; i <= 2; i++)
@@ -104,7 +104,7 @@ void edit_scoreboard(unsigned int score) {
                 display_update();
             }
             if (buttons&0xc) {
-                if (buttons&8 && !index) //If index = 0 we are going to have a bad time, m'key
+                if (buttons&8 && index) //If index = 0 we are going to have a bad time, m'key
                     index--;
                 if (buttons&4)
                     index++;
@@ -114,7 +114,7 @@ void edit_scoreboard(unsigned int score) {
     // Insert into highscoretable if valid score
     enter_highscore(score, textrep);
 }
-// Initiates
+// Initiates the game
 enum state game() {
     const int x = 128;
     const int y = 32;
@@ -160,6 +160,8 @@ enum state game() {
             return SCOREBOARD;
         }   
 }
+
+//State for displaying the scoreboard
 enum state view_scoreboard() {
     enum state exitpoints[] = {MENU};
     int buttons = 0;
@@ -171,32 +173,18 @@ enum state view_scoreboard() {
             return exitpoints[i-1];
 }
 
+// What if something goes wrong
 enum state error() {
     display_string(0, "ERROR");
     display_update();
     while(1); // Sleep forever
 }
 
-void clockinitiate(void) {
-    volatile int * MyTRISE = (int *) 0x1F886100;
-    volatile int * MyTRISD = TRISD;
-    volatile int * MyTRISF = TRISF;
-    *MyTRISE |= 0xFF;
-    *MyTRISD &= ~0xFE0;
-    *MyTRISF |= 0x2;
-    PR2 = (80000000/256)/10; //Sätt till korrekt värde för 100ms timeout 0x3D
-    T2CON = 0x0;
-    TMR2 = 0x0;
-    T2CONSET = 0X0070;
-    T2CONSET = 0X8070;
-}
-
-
+// Start the program
 int main(void) {
     int i,j;
     enum state state = MENU;
     program_init();
-    clockinitiate();
     dirty_wait(1);
     while (1500) {
         states++;
@@ -216,10 +204,4 @@ int main(void) {
                 break;
         }
     }
-    /*
-    dirty_wait(100);
-    display_changepage(1,2,2);
-    dirty_wait(100);
-    display_changepage(0,2,2);
-    */
 }

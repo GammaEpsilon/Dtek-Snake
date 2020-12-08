@@ -25,6 +25,12 @@ typedef struct score {
 
 score highscores[3] = {NEW_SCORE, NEW_SCORE, NEW_SCORE};
 
+/* Interrupt Service Routine */
+void user_isr( void ) //Den här är väl helt onödig?
+{
+  return;
+}
+
 // Displays the current highscores
 void testinghighscore(int line, score *s) {
 	if(line < 0 || line >= 4)

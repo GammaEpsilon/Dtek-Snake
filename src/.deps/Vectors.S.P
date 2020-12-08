@@ -1,2 +1,2 @@
-Vectors.S.o: Vectors.S
-Vectors.S :
+vectors.S.o: vectors.S
+vectors.S :
