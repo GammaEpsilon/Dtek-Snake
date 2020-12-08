@@ -37,14 +37,14 @@ void quicksleep(int cyc) {
 	int i;
 	for(i = cyc; i > 0; i--);
 }
-
+// Sends to oled and waits for response, taken from labs
 uint8_t spi_send_recv(uint8_t data) {
 	while(!(SPI2STAT & 0x08));
 	SPI2BUF = data;
 	while(!(SPI2STAT & 1));
 	return SPI2BUF;
 }
-
+// Initilizes the display, taken from labs
 void display_init(void) {
 	DISPLAY_CHANGE_TO_COMMAND_MODE;
 	quicksleep(10);

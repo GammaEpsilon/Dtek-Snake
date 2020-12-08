@@ -1,7 +1,7 @@
 // Game logic of snake game
 // Author: Erik Hedlund
 // Version: 2020-12-06
-// Used to dubugging the snake logic on a computer. 
+// Used for debugging the snake logic on a computer. 
 // Increased debugging-efficieny and saved read time to chipkit. 
 // This file is not used in to run the chipKit project
 

@@ -36,7 +36,7 @@ unsigned char resetgrid[128*32];
 int appleLoc;
 cord dims;
 enum AI mode;
-
+//Moves snake based on it's movement-field
 void move(snake * snake) {
     snake->buffer[snake->head + 1] = snake->buffer[snake->head];
     ++(snake->head);
@@ -80,6 +80,7 @@ void init(snake *snake, cord dimensions) {
     for (i = INITIAL_LENGTH-1; i--; snake->grow=1) move(snake); //Set initial size to 2
 }
 
+// Initializes the struct grid if
 void init_structgrid(cord dims, char multiplayer) {
     cord arr[] = {{6, 4}, {dims.x-3, 4}, {6, dims.y-5}, {dims.x-3, dims.y-5}}; // I have no idea why these are the constants that position the crosses correctly
         int i, j;
@@ -96,8 +97,8 @@ void init_structgrid(cord dims, char multiplayer) {
             for (i = temp[j]; i < temp[j+1]; i++) resetgrid[dims.x*i+dims.x/2+2] = 10; // Draw vertical line in middle
     }
 }
-
-// Returns != 0 when game over
+// Updates grid and checks for game over/growing etc..
+// Returns < 0 when game over
 char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, cord dimensions) {
     char bitflag = 0;
     int temp;
@@ -130,10 +131,11 @@ char updateGrid(unsigned char *grid, snake *snakes, unsigned char noOfSnakes, co
 // "AI" Part
 
 enum AI mode;
-
+//Ai for the easiest AI
 enum movement braindead(const snake *snake) {
     return snake->movement;
 }
+// AI for the medium (still pretty easy) AI
 // 1/2 chance to OLD, 1/4 chance for the other two non conflicting directions
 enum movement retarded(const snake *snake) {
     enum movement random = (rand()%4) + 1;
@@ -144,6 +146,7 @@ enum movement retarded(const snake *snake) {
        ) ? snake->movement:random; //Return OLD if random chose same or conflicting direction, else random
 }
 
+// AI for the smart AI. Probably the only one that will challenge the player
 enum movement average(const snake *snake, const unsigned char *grid) {
     cord applelocation = {appleLoc%dims.x, appleLoc/dims.x};
     cord snakeCord = snake->buffer[snake->head];
@@ -161,7 +164,7 @@ enum movement average(const snake *snake, const unsigned char *grid) {
 }
 
 // Exposed functions
-
+// Initializes the game
 char game_init(enum AI ai, int x, int y, unsigned char *grid, char structures, unsigned int seed) {
     noOfS = 1 + !(!ai);
     srand(seed);
@@ -179,7 +182,7 @@ char game_init(enum AI ai, int x, int y, unsigned char *grid, char structures, u
     generate_apple(grid, dims);
     return 1;
 }
-
+// Elapses a turn
 int turn(enum movement movement, unsigned char * output) {
     int bitflag;
     int j;
