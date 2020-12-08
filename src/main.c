@@ -17,6 +17,12 @@ enum state {MENU, GAME, SCOREBOARD, ERROR};
 
 void *stdin, *stdout, *stderr;
 
+volatile int* currentClock = 0;
+
+int* returnRand(void) {
+    return currentClock;
+}
+
 void program_init() {
     //All program initlization goes here
     control_init();
@@ -25,17 +31,33 @@ void program_init() {
 
 void display(const unsigned char *grid) {
     static unsigned char reference[(32*128)/8];
+    unsigned char buffer[(32*128)/8];
     int i, j, k;
-	for(i = 0; i<4; i++)
-		for(j = 0; j<128; j++) {
-			unsigned char input = 0;
-			for (k=0; k<8; k++)
-				input |= (grid[128*8*i+128*k+j] != 0)<<k;
-            if (input != reference[128*i+j]) {
+    for(i = 0; i<4; i++)
+        for(j = 0; j<128; j++) {
+            unsigned char input = 0;
+            for (k=0; k<8; k++)
+                input |= (grid[128*8*i+128*k+j] != 0)<<k;
+            /*if (input != reference[128*i+j]) {
                 display_changepage(input, i, k);
                 reference[128*i+j] = input;
-            }
-		}
+            }*/
+            buffer[128*i+j] = input;
+        }
+    display_entire_oled(buffer);
+}
+
+//This is a rather dirty solution, but ISF(0) Just refuses to work
+dirty_wait(int count) {
+    do {
+    currentClock = (int*) TMR2;
+    T2CON = 0; //Stanna klockjäveln
+    T2CONSET = 0x70; //Sätt PreScaling till 256 
+    TMR2 = 0;
+    PR2 = 0xffffffff; //Set to max
+    T2CONSET = 0x8070;
+    while (TMR2 < (80000000/256)/10);
+    } while(--count);
 }
 
 enum state menu() {
@@ -46,7 +68,7 @@ enum state menu() {
     display_update();
     int buttons, i;
     enum state exitpoints[] = {GAME, SCOREBOARD};
-    wait();
+    dirty_wait(5);
     while (!((buttons = getbtns())&0x3)); // Maybe sleep to ease up performance
     for (i = 1; i <= 2; i++)
         if (buttons&i)
@@ -60,6 +82,7 @@ void edit_scoreboard(unsigned int score) {
     buff[3] = '\0';
     display_string(0, "Enter name:");
     display_string(1, textrep);
+    display_update();
     for (index = 0; index < 4; buttons = getbtns())
         if (buttons) {
             if (buttons&3) {
@@ -67,27 +90,28 @@ void edit_scoreboard(unsigned int score) {
                 buff[index] %= ('z' - 'a'); // Roll over if neccessary
                 for (i = 0; i < 3; i++) textrep[i] = buff[i] + 'a';
                 display_string(1, textrep);
+                display_update();
             }
             if (buttons&0xc) {
-                if (buttons&4 && !index) //If index = 0 we are going to have a bad time, m'key
+                if (buttons&8 && !index) //If index = 0 we are going to have a bad time, m'key
                     index--;
-                if (buttons&8)
+                if (buttons&4)
                     index++;
             }
+            dirty_wait(5);
         }
-    //INSERT INTO SCOREBOARD(score, textrep)
-    enter_highscore(score, textrep);
+    //Insert into highscoretable if valid score
+    if(wouldgetin(score)) enter_highscore(score, textrep);
 }
 enum state game() {
-    int j = 3;
     const int x = 128;
     const int y = 32;
-    unsigned int returnVal, i, buttons;
+    int returnVal;
+    unsigned int i, buttons;
     unsigned char grid[x*y];
     int switches = getsw(); // Switch 1 and 2 determines AI level, switch 3 determines structures
-    unsigned int seed = (int)&switches|(int)&returnVal; //Should be random enough
+    unsigned int seed = (int)&switches|(int)&returnVal|(int)returnRand(); //Should be random enough
     if (! game_init(switches&0x3, x, y, grid, switches&0x4, seed)) return ERROR; //Something went wrong...
-    clockinit((((switches>>3)&1)+1)*5);
     do {
         enum movement move, controlMap[] = {DOWN, RIGHT, UP, LEFT}; // Map index corresponds to button id-1, lower index gives priority
         if (!(buttons = getbtns()))
@@ -98,16 +122,10 @@ enum state game() {
                     move = controlMap[i];
                     break;
                 }
+        dirty_wait(5>>((switches>>3)&1));
         returnVal = turn(move, grid);
         display(grid);
-        while(!((IFS(0)) & 0x100)) {
-            int k;
-            for(k=0;k<100;k++){
-                //Sleepy time
-            }
-            IFS(0) &= ~0x100; //Reset:a timeoutflag
-        }
-    } while (--j); // removed earlier ! returnVal&~0x80000000
+    } while (returnVal >= 0); // removed earlier ! returnVal&~0x80000000
     if (switches&0x3) { // If multiplayer
         seed = 0; // No need to preserve seed anymore
         int i;
@@ -121,21 +139,21 @@ enum state game() {
         display_string(seed++, "Press button");
         display_string(seed,  "to continue");
         display_update();
+        dirty_wait(5);
         while (!getbtns());
         return MENU;
         } else {
             if (wouldgetin(returnVal&~0x80000000))
                 edit_scoreboard(returnVal&~0x80000000);
             return SCOREBOARD;
-        }
-        
+        }   
 }
 enum state view_scoreboard() {
     enum state exitpoints[] = {MENU};
     int buttons = 0;
     int i = 1;
     display_highscores();
-    wait();
+    dirty_wait(5);
     while (!((buttons = getbtns())&0x4)); // Maybe sleep to ease up performance
         if (buttons&i)
             return exitpoints[i-1];
@@ -167,10 +185,8 @@ int main(void) {
     enum state state = MENU;
     program_init();
     clockinitiate();
+    dirty_wait(1);
     while (1500) {
-        while(!((IFS(0)) & 0x100)) {
-            IFS(0) &= ~0x100; //Reset:a timeoutflag
-        }
         cleartext();
         switch(state) { //Our fancy state machine
             case MENU:
@@ -187,4 +203,10 @@ int main(void) {
                 break;
         }
     }
+    /*
+    dirty_wait(100);
+    display_changepage(1,2,2);
+    dirty_wait(100);
+    display_changepage(0,2,2);
+    */
 }

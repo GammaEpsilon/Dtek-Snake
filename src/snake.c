@@ -64,14 +64,19 @@ void move(snake * snake) {
     }
 
 void init(snake *snake, cord dimensions) {
+    int i;
+    for(i = 0; i < SNAKE_BUFFER; i++) {
+        snake->buffer[i].x=0;
+        snake->buffer[i].y=0;
+    }
     static char createdSnakes = 1.0;
     snake->buffer[0].x = dimensions.x/2 - 1;
     snake->buffer[0].y = (int) (dimensions.y * (createdSnakes/(noOfS+1.0)));
     snake->tail = 0;
     snake->head = 0;
     snake->id = createdSnakes++;
+    if(createdSnakes > noOfS) createdSnakes = 1;
     snake->movement = RIGHT;
-    int i;
     for (i = INITIAL_LENGTH-1; i--; snake->grow=1) move(snake); //Set initial size to 2
 }
 
@@ -168,6 +173,8 @@ char game_init(enum AI ai, int x, int y, unsigned char *grid, char structures, u
     for (i = 0; i < noOfS; i++) init(snakes + i, dims);
     if (structures)
         init_structgrid(dims, ai);
+    else
+        for (i = 0; i < 128*32; resetgrid[i++] = 0);
     reset_grid(grid, dims);
     generate_apple(grid, dims);
     return 1;

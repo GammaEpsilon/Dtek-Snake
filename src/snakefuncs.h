@@ -22,6 +22,7 @@ void quicksleep(int cyc);
 void testHighscore(void);
 void display_changepixel(int, unsigned char, const unsigned char*);
 void display_changepage(unsigned char byte, unsigned char page, unsigned char collum);
+void display_entire_oled(const unsigned char *byte);
 void itoa(int x, char * buf);
 int strcpy(char * dest, const char *src);
 

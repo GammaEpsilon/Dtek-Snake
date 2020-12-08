@@ -159,6 +159,22 @@ void display_update(void) {
   }
 */
 
+void display_entire_oled(const unsigned char *byte) {
+    int i;
+    DISPLAY_CHANGE_TO_COMMAND_MODE;
+    spi_send_recv(0x20);
+	spi_send_recv(0x0);
+	
+    spi_send_recv(0x22);
+    spi_send_recv(0x0);
+    spi_send_recv(0x3);
+    DISPLAY_CHANGE_TO_DATA_MODE;
+    for (i = 0; i < 128*4; i++) {
+        spi_send_recv(byte[i]);
+    }
+}
+
+
 void display_changepage(unsigned char byte, unsigned char page, unsigned char collum) {
 	int i;
     DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -271,4 +287,5 @@ void lab_init(void) {
 	SPI2CONSET = 0x8000;
 	//Removed a bunch of display_lines here
 	display_init();
+	display_update();
 }
