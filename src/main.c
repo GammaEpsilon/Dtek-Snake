@@ -9,10 +9,9 @@
 #include "snakefuncs.h"
 #include "highscoredisplay.h"
 
-//#define wait(count) {int x = count ; do { while(!((IFS(0)) & 0x100)) IFS(0) &= ~0x100; } while(--x);}
 
 #define cleartext() {int i = 3; while(i>-1) display_string(i--, ""); display_update();}
-//#define wait() { while(!((IFS(0)) & 0x100)) IFS(0) &= ~0x100;}
+
 enum state {MENU, GAME, SCOREBOARD, ERROR};
 
 void *stdin, *stdout, *stderr;
@@ -20,9 +19,6 @@ void *stdin, *stdout, *stderr;
 unsigned int timeinmenu = 0;
 unsigned int states = 0;
 
-//int* returnRand(void) {
-//    return currentClock;
-//}
 
 void program_init() {
     //All program initlization goes here
@@ -40,10 +36,6 @@ void display(const unsigned char *grid) {
             unsigned char input = 0;
             for (k=0; k<8; k++)
                 input |= (grid[128*8*i+128*k+j] != 0)<<k;
-            /*if (input != reference[128*i+j]) {
-                display_changepage(input, i, k);
-                reference[128*i+j] = input;
-            }*/
             buffer[128*i+j] = input;
         }
     display_entire_oled(buffer);
@@ -52,7 +44,6 @@ void display(const unsigned char *grid) {
 //This is a rather dirty solution, but ISF(0) Just refuses to work
 dirty_wait(int count) {
     do {
-    //currentClock = (int*) TMR2;
     T2CON = 0; //Stop the clock
     T2CONSET = 0x70; //Initiate PreScaling to 256 
     TMR2 = 0;

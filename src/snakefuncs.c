@@ -75,6 +75,7 @@ void display_init(void) {
 	spi_send_recv(0xAF);
 }
 
+// displays text output on a specified line, taken from labs
 void display_string(int line, char *s) {
 	int i;
 	if(line < 0 || line >= 4)
@@ -90,6 +91,7 @@ void display_string(int line, char *s) {
 			textbuffer[line][i] = ' ';
 }
 
+// displays an image, taken from labs
 void display_image(int x, const uint8_t *data) {
 	int i, j;
 	
@@ -109,6 +111,7 @@ void display_image(int x, const uint8_t *data) {
 	}
 }
 
+// updates the display to outprint for example text, taken from labs
 void display_update(void) {
 	int i, j, k;
 	int c;
@@ -135,6 +138,7 @@ void display_update(void) {
 
 //Following is code written for the project;
 
+// displays the entire oledscreen, used to update 
 void display_entire_oled(const unsigned char *byte) {
     int i;
     DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -149,7 +153,7 @@ void display_entire_oled(const unsigned char *byte) {
     }
 }
 
-
+// Displays a change in a page given a page, byte and column
 void display_changepage(unsigned char byte, unsigned char page, unsigned char collum) {
 	int i;
     DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -166,7 +170,7 @@ void display_changepage(unsigned char byte, unsigned char page, unsigned char co
     spi_send_recv(byte);
 }
 
-// Displays
+// Displays a change in some pixel given an index.
 void display_changepixel(int pixelIndex, unsigned char on, const unsigned char *grid) {
 	int i;
 	int page = pixelIndex/(128*8);
