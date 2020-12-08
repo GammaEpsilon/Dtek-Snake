@@ -6,9 +6,10 @@
    Latest update 2020-12-06 by T Vinsa
 
 
-
+*/
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
+#include "highscoredisplay.h" /* Cool */
 #include "snakefuncs.h"  /* Declaratations for the game */
 
 void *stdin, *stdout, *stderr;
