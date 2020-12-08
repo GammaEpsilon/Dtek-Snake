@@ -9,22 +9,16 @@
 #include "snakefuncs.h"
 #include "highscoredisplay.h"
 
-//#define wait(count) {int x = count ; do { while(!((IFS(0)) & 0x100)) IFS(0) &= ~0x100; } while(--x);}
 
 #define cleartext() {int i = 3; while(i>-1) display_string(i--, ""); display_update();}
-//#define wait() { while(!((IFS(0)) & 0x100)) IFS(0) &= ~0x100;}
+
 enum state {MENU, GAME, SCOREBOARD, ERROR};
 
 void *stdin, *stdout, *stderr;
 
-volatile int* currentClock = 0;
-
 unsigned int timeinmenu = 0;
 unsigned int states = 0;
 
-int* returnRand(void) {
-    return currentClock;
-}
 
 void program_init() {
     //All program initlization goes here
@@ -32,6 +26,7 @@ void program_init() {
     lab_init();
 }
 
+// Displays the entire oled with game objects such as snakes, apples and structures
 void display(const unsigned char *grid) {
     static unsigned char reference[(32*128)/8];
     unsigned char buffer[(32*128)/8];
@@ -64,8 +59,8 @@ dirty_wait(int count) {
 }
 //Main manu of the game, leads to a new game or displays the scoreboard
 enum state menu() {
-    T2CON = 0; //Stanna klockjäveln
-    T2CONSET = 0x70; //Sätt PreScaling till 256 
+    T2CON = 0; //Stop the clock
+    T2CONSET = 0x70; //Initiate PreScaling to 256 
     TMR2 = 0;
     T2CONSET = 0x8070;
     display_string(0, "Welcome to");

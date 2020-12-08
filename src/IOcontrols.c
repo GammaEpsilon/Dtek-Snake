@@ -14,17 +14,18 @@ void control_init(void)
   *MyTRISF |= 0x2;
   *MyTRISD &= ~0xFE0;
 }
-
+// Get switch inputs
 int getsw( void ) {
     volatile int* myPORTD = PORTD;
     return (*myPORTD>>8)&0xF;
 }
-
+// Get button inputs
 int getbtns(void) {
     volatile int* myPORTD = PORTD;
     return ((*myPORTD>>4)&0xE)|getbtn1();
 }
 
+// Returns BTN1 input
 int getbtn1(void) {
     volatile int* myPORTF = PORTF;
 		return (*myPORTF>>1)&0x1;

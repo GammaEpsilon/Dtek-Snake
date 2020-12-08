@@ -45,6 +45,7 @@ uint8_t spi_send_recv(uint8_t data) {
 	return SPI2BUF;
 }
 
+// display_init func taken from the labs.
 void display_init(void) {
 	DISPLAY_CHANGE_TO_COMMAND_MODE;
 	quicksleep(10);
@@ -74,7 +75,7 @@ void display_init(void) {
 	
 	spi_send_recv(0xAF);
 }
-
+// display_string func taken from the labs.
 void display_string(int line, char *s) {
 	int i;
 	if(line < 0 || line >= 4)
@@ -90,25 +91,7 @@ void display_string(int line, char *s) {
 			textbuffer[line][i] = ' ';
 }
 
-void display_image(int x, const uint8_t *data) {
-	int i, j;
-	
-	for(i = 0; i < 4; i++) {
-		DISPLAY_CHANGE_TO_COMMAND_MODE;
-
-		spi_send_recv(0x22);
-		spi_send_recv(i);
-		
-		spi_send_recv(x & 0xF);
-		spi_send_recv(0x10 | ((x >> 4) & 0xF));
-		
-		DISPLAY_CHANGE_TO_DATA_MODE;
-		
-		for(j = 0; j < 32; j++)
-			spi_send_recv(~data[i*32 + j]);
-	}
-}
-
+// display_update func taken from the labs.
 void display_update(void) {
 	int i, j, k;
 	int c;
@@ -135,30 +118,7 @@ void display_update(void) {
 
 //Following is code written for the project;
 
-/*void display_map(snakepos, gamemap) {
-	int i, j;
-	
-	for(i = 0; i < 4; i++) {
-		DISPLAY_CHANGE_TO_COMMAND_MODE;
-
-		spi_send_recv(0x22);
-		spi_send_recv(i);
-		
-		spi_send_recv(x & 0xF);
-		spi_send_recv(0x10 | ((x >> 4) & 0xF));
-		
-		DISPLAY_CHANGE_TO_DATA_MODE;
-		
-		for(j = 0; j < 32; j++)
-			spi_send_recv(~data[i*32 + j]);
-	}
-}
-  while(snake is alive) {
-    display_map(snakepos, gamemap);
-    display_update();
-  }
-*/
-
+//Used to display the entire oled screen
 void display_entire_oled(const unsigned char *byte) {
     int i;
     DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -173,7 +133,7 @@ void display_entire_oled(const unsigned char *byte) {
     }
 }
 
-
+// Displays differnt parts of the oled given byte, page and column
 void display_changepage(unsigned char byte, unsigned char page, unsigned char collum) {
 	int i;
     DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -190,6 +150,7 @@ void display_changepage(unsigned char byte, unsigned char page, unsigned char co
     spi_send_recv(byte);
 }
 
+// Displays a single pixel change
 void display_changepixel(int pixelIndex, unsigned char on, const unsigned char *grid) {
 	int i;
 	int page = pixelIndex/(128*8);

@@ -1,3 +1,7 @@
+# Taken from labs
+# Original code written by A Isaksson and F Lundevall
+# Only added -lc flag
+
 # PIC32 device number
 DEVICE		= 32MX320F128H
 

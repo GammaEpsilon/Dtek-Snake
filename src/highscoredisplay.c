@@ -1,13 +1,10 @@
 /* highscoredisplay.c
 
-   This file written 2020 by T Vinsa and E Hedlund
+   This file written 2020 by T Vinsa
 
-   Some parts are original code written by F Lundevall 
-   Updated 2017-04-21 by F Lundevall
 
-   Latest update 2020-12-06 by T Vinsa and E Hedlund
+   Latest update 2020-12-06 by T Vinsa
 
-   For copyright and licensing, see file COPYING */
 
 
 #include <stdint.h>   /* Declarations of uint_32 and the like */
@@ -25,8 +22,8 @@ typedef struct score {
 
 score highscores[3] = {NEW_SCORE, NEW_SCORE, NEW_SCORE};
 
-/* Interrupt Service Routine */
-void user_isr( void ) //Den här är väl helt onödig?
+/* Interrupt Service Routine, required for the Vectors-file */
+void user_isr( void )
 {
   return;
 }

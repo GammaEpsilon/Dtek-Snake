@@ -1,3 +1,7 @@
+// Control logic and initilazation
+// Author: Erik Hedlund
+// Author: Tobias Vinsa
+// Version: 2020-12-06
 
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 
