@@ -51,15 +51,15 @@ void display(const unsigned char *grid) {
 dirty_wait(int count) {
     do {
     currentClock = (int*) TMR2;
-    T2CON = 0; //Stanna klockjäveln
-    T2CONSET = 0x70; //Sätt PreScaling till 256 
+    T2CON = 0; //Stop the clock
+    T2CONSET = 0x70; //Initiate PreScaling to 256 
     TMR2 = 0;
     PR2 = 0xffffffff; //Set to max
     T2CONSET = 0x8070;
     while (TMR2 < (80000000/256)/10);
     } while(--count);
 }
-
+//Main manu of the game, leads to a new game or displays the scoreboard
 enum state menu() {
     display_string(0, "Welcome to");
 	display_string(1, "Hedlund's");
@@ -74,6 +74,7 @@ enum state menu() {
         if (buttons&i)
             return exitpoints[i-1];
 }
+//Edits the scoreboard with the players end score and username input
 void edit_scoreboard(unsigned int score) {
     int buttons;
     unsigned char buff[3] = {0, 0, 0}; 
@@ -100,9 +101,10 @@ void edit_scoreboard(unsigned int score) {
             }
             dirty_wait(5);
         }
-    //Insert into highscoretable if valid score
-    if(wouldgetin(score)) enter_highscore(score, textrep);
+    // Insert into highscoretable if valid score
+    enter_highscore(score, textrep);
 }
+// Initiates
 enum state game() {
     const int x = 128;
     const int y = 32;

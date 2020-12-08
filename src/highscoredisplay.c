@@ -25,12 +25,6 @@ typedef struct score {
 
 score highscores[3] = {NEW_SCORE, NEW_SCORE, NEW_SCORE};
 
-/* Interrupt Service Routine */
-void user_isr( void ) //Den här är väl helt onödig?
-{
-  return;
-}
-
 // Displays the current highscores
 void testinghighscore(int line, score *s) {
 	if(line < 0 || line >= 4)
@@ -51,7 +45,7 @@ void testinghighscore(int line, score *s) {
 // Updates the highscore if a new highscore is reached. Maximum 3 highscore positions
 void enter_highscore(int snakelength, char* name) {
 	int i;
-	for(i=0;i < 3; i++) { //säg att 3 platser visas på vårt highscore bord
+	for(i=0;i < 3; i++) {
     if(snakelength > highscores[i].score) {
       char tempName[4];
       int tempscore = highscores[i].score;
@@ -64,7 +58,7 @@ void enter_highscore(int snakelength, char* name) {
 	}
   return;
 }
-
+// Displays the top players and their highscore during this run
 void display_highscores(void) {
 	display_string(0, "Scores!:");
 	testinghighscore(1, highscores);
