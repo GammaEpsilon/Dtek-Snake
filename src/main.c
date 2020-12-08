@@ -19,6 +19,9 @@ void *stdin, *stdout, *stderr;
 
 volatile int* currentClock = 0;
 
+unsigned int timeinmenu = 0;
+unsigned int states = 0;
+
 int* returnRand(void) {
     return currentClock;
 }
@@ -61,6 +64,10 @@ dirty_wait(int count) {
 }
 //Main manu of the game, leads to a new game or displays the scoreboard
 enum state menu() {
+    T2CON = 0; //Stanna klockjäveln
+    T2CONSET = 0x70; //Sätt PreScaling till 256 
+    TMR2 = 0;
+    T2CONSET = 0x8070;
     display_string(0, "Welcome to");
 	display_string(1, "Hedlund's");
 	display_string(2, "and Vinsa's");
@@ -69,7 +76,10 @@ enum state menu() {
     int buttons, i;
     enum state exitpoints[] = {GAME, SCOREBOARD};
     dirty_wait(5);
-    while (!((buttons = getbtns())&0x3)); // Maybe sleep to ease up performance
+    while (!((buttons = getbtns())&0x3)) {
+        timeinmenu += TMR2/10
+        TMR2 = 0;
+    }
     for (i = 1; i <= 2; i++)
         if (buttons&i)
             return exitpoints[i-1];
@@ -112,7 +122,7 @@ enum state game() {
     unsigned int i, buttons;
     unsigned char grid[x*y];
     int switches = getsw(); // Switch 1 and 2 determines AI level, switch 3 determines structures
-    unsigned int seed = (int)&switches|(int)&returnVal|(int)returnRand(); //Should be random enough
+    unsigned int seed = timeinmenu|states; //Should be random enough
     if (! game_init(switches&0x3, x, y, grid, switches&0x4, seed)) return ERROR; //Something went wrong...
     do {
         enum movement move, controlMap[] = {DOWN, RIGHT, UP, LEFT}; // Map index corresponds to button id-1, lower index gives priority
@@ -189,6 +199,7 @@ int main(void) {
     clockinitiate();
     dirty_wait(1);
     while (1500) {
+        states++;
         cleartext();
         switch(state) { //Our fancy state machine
             case MENU:
